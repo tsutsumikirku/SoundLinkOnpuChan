@@ -1,1 +1,1 @@
-# SoundLinkOnpuChan
+# SoundLinkおんぷちゃん開発用リポジトリ
