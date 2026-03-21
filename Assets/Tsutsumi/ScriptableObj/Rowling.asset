@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 588d75d9d290a374ea4de5db17e0528a, type: 3}
+  m_Name: Rowling
+  m_EditorClassIdentifier: 
+  _power: 6.94
+  _second: 0
+  _defaultValue: 1
+  _maxValue: 3
+  _minValue: 0
+  _info: 
+  _nodeName: "\u304F\u308B\u304F\u308B"
+  _nodeSprite: 
+  _playerAction: 6
+  _playerStateType: 2

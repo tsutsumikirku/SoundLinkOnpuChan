@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 588d75d9d290a374ea4de5db17e0528a, type: 3}
+  m_Name: Walk
+  m_EditorClassIdentifier: 
+  _power: 0
+  _second: 0
+  _defaultValue: 0
+  _maxValue: 5
+  _minValue: 0
+  _info: "\u6B69\u304F\u3088"
+  _nodeName: "\u3066\u304F\u3066\u304F"
+  _nodeSprite: UI_Pidtogram/UI_Pidtogram_Tekuteku
+  _playerAction: 1
+  _playerStateType: 1
