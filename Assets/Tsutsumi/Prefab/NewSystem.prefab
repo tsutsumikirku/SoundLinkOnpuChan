@@ -5575,7 +5575,7 @@ GameObject:
   - component: {fileID: 301683577436167850}
   - component: {fileID: 4447052624133323536}
   m_Layer: 5
-  m_Name: FarView
+  m_Name: CameraSetting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5761,13 +5761,13 @@ RectTransform:
   - {fileID: 1347310132843731063}
   - {fileID: 700467424373746291}
   - {fileID: 3719152482249815362}
+  - {fileID: 8317062817317348017}
   - {fileID: 4744160270204393085}
   - {fileID: 6338392940351831671}
   - {fileID: 1510434295948782971}
   - {fileID: 6106692361062589079}
   - {fileID: 7837229948591656846}
   - {fileID: 5066855975340617925}
-  - {fileID: 8317062817317348017}
   m_Father: {fileID: 7943575520600637973}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.055687204, y: 0.053846154}
@@ -11667,7 +11667,7 @@ GameObject:
   - component: {fileID: 2107589087231227677}
   - component: {fileID: 8506143827997198960}
   m_Layer: 5
-  m_Name: NewCamera
+  m_Name: UISetting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12257,7 +12257,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3346049465123827029, guid: a4371ce896ca51a4bae1af7fe70fa151, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -581.4264
+      value: -581.42633
       objectReference: {fileID: 0}
     - target: {fileID: 3346049465123827029, guid: a4371ce896ca51a4bae1af7fe70fa151, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -13613,6 +13613,10 @@ PrefabInstance:
       propertyPath: _stageTex
       value: 
       objectReference: {fileID: 7882385105822543002}
+    - target: {fileID: 4488747338102009090, guid: ac4d613e7f875e541a77163ef9046a75, type: 3}
+      propertyPath: _timeLine
+      value: 
+      objectReference: {fileID: 2525864519347189351}
     - target: {fileID: 4488747338102009090, guid: ac4d613e7f875e541a77163ef9046a75, type: 3}
       propertyPath: _seCueName
       value: SE_InGame_StageClear
