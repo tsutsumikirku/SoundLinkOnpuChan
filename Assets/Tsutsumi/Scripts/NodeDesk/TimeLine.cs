@@ -32,8 +32,8 @@ public class TimeLine : MonoBehaviour, ITable
         _maxNodeCount = FindAnyObjectByType<InGameUIManager>()._nodeCount;
         DOTween.SetTweensCapacity(500, 50);
         _defaultWidth = ((RectTransform)transform).sizeDelta.x;
-        // _nodeMaxCountText.text = _maxNodeCount.ToString();
-        // _nodeCountText.text = (transform.childCount - 1).ToString();
+        _nodeMaxCountText.text = _maxNodeCount.ToString();
+        _nodeCountText.text = (transform.childCount - 1).ToString();
         
         UndoUI.Add(null, x => DeskUndo((List<NodeData>)x), gameObject); // Undoに追加
         DeskUpdate();
@@ -123,7 +123,7 @@ public class TimeLine : MonoBehaviour, ITable
     }
     public async UniTask DeskinUpdate()
     {
-        // _nodeCountText.text = (transform.childCount - 1).ToString(); // ノードの数を更新
+        _nodeCountText.text = (transform.childCount - 1).ToString(); // ノードの数を更新
         float location = _location; // ノードのxのロケーション
         var nodeBases = GetComponentsInChildren<NodeMove>(); // ノードのリストを取得
         var selfRectTransform = GetComponent<RectTransform>(); // 自身のRectTransformを取得
@@ -170,14 +170,14 @@ public class TimeLine : MonoBehaviour, ITable
         if (nodeDatas == null)
         {
             ((RectTransform)transform).sizeDelta = new Vector2(_defaultWidth, ((RectTransform)transform).sizeDelta.y);
-            // _nodeCountText.text = "0";
+            _nodeCountText.text = "0";
             return;
         }
         if (nodeDatas == null || nodeDatas.Count == 0)
         {
             // ノードデータが無い場合はリセット
             ((RectTransform)transform).sizeDelta = new Vector2(_defaultWidth, ((RectTransform)transform).sizeDelta.y);
-            // _nodeCountText.text = "0";
+            _nodeCountText.text = "0";
             return;
         }
 
@@ -209,7 +209,7 @@ public class TimeLine : MonoBehaviour, ITable
             rect.SetAsLastSibling();
             nodeRects.Add(rect);
         }
-        // _nodeCountText.text = (nodeDatas.Count).ToString();
+        _nodeCountText.text = (nodeRects.Count).ToString();
         // ノードが1つも生成されなかった場合の安全対策
         float lastNodeWidth = (nodeRects.Count > 0) ? nodeRects[nodeRects.Count - 1].rect.width : 0f;
         float totalWidth = location + lastNodeWidth;
@@ -235,7 +235,7 @@ public class TimeLine : MonoBehaviour, ITable
         // 親オブジェクトのサイズは変更しない
         string path = SceneManager.GetActiveScene().name;
         Debug.Log("ノードデータを保存しました");
-        // _nodeCountText.text = 0.ToString(); // ノードの数を更新
+        _nodeCountText.text = "0"; // ノードの数を更新
     }
 
     public bool isParfect()
