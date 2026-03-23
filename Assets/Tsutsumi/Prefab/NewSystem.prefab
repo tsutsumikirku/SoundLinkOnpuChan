@@ -6076,7 +6076,7 @@ GameObject:
   - component: {fileID: 2113914862715491241}
   - component: {fileID: 6399118976676747289}
   - component: {fileID: 301683577436167850}
-  - component: {fileID: 4447052624133323536}
+  - component: {fileID: 7134442974450959226}
   m_Layer: 5
   m_Name: CameraSetting
   m_TagString: Untagged
@@ -6198,7 +6198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: "\u4ECA\u56DE\u6311\u3080\u30B9\u30C6\u30FC\u30B8\u3060\u3088"
---- !u!114 &4447052624133323536
+--- !u!114 &7134442974450959226
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6207,25 +6207,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 7411539919576416488}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db7df10a37a1a46f3820a27c43a44e5c, type: 3}
+  m_Script: {fileID: 11500000, guid: 88f804bb520d74416928779a52a9ff83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraMoveTime: 5
-  cameraResetTime: 0.1
-  sequencePositions: []
-  playerTransform: {fileID: 0}
-  cameraResetButton: {fileID: 8170359397420764886}
-  offset: {x: 0, y: 2.37}
-  moveSpeed: 0.56
-  zoomSpeed: 1
-  maxHight: -5
-  minHight: -28
-  minFOV: 20
-  maxFOV: 60
-  minMoveSensitivity: 0.2
-  inertiaDamping: 5
-  inertiaMinSpeed: 0.01
-  defaultFOV: 60
+  _target: {fileID: 0}
+  _cinemachineVirtual: {fileID: 0}
+  _cinemachineConfiner: {fileID: 0}
+  _dragSpeed: 0.5
+  _maxCameraHeight: -20
+  _minCameraHeight: -25
+  _leftCameraPlus: 0
+  _rightCameraPlus: 0
+  _minFOV: 30
+  _maxFOV: 60
+  _cameraButton: {fileID: 8033206541572934927}
 --- !u!1 &7615329191804219926
 GameObject:
   m_ObjectHideFlags: 0
