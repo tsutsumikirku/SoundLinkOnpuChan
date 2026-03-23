@@ -16,7 +16,7 @@ MonoBehaviour:
   _second: 0
   _defaultValue: 3
   _maxValue: 3
-  _minValue: 0
+  _minValue: 1
   _info: 
   _nodeName: "\u304F\u308B\u304F\u308B"
   _nodeSprite: 
