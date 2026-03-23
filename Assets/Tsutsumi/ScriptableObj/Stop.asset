@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _power: 0
   _second: 0
-  _defaultValue: 0
+  _defaultValue: 1
   _maxValue: 5
   _minValue: 0
   _info: "\u6B62\u307E\u308B\u3088"

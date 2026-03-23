@@ -37,7 +37,7 @@ public class PlayerBackMoveCommand : PlayerCommand
         _moveSpeed = _defaultMoveSpeed * -1;
 
         //数値のリセット
-        _rb.velocity = Vector3.zero;
+        _rb.linearVelocity = Vector3.zero;
         _time = 0;
 
         _animator.SetBool("Move", true);
@@ -53,8 +53,8 @@ public class PlayerBackMoveCommand : PlayerCommand
         //TODO:HERE 前方にオブジェクトが存在したときの処理
         if (_time < _node.Second)
         {
-            var velocity = new Vector2(_moveSpeed, _rb.velocity.y);
-            _rb.velocity = velocity;
+            var velocity = new Vector2(_moveSpeed, _rb.linearVelocity.y);
+            _rb.linearVelocity = velocity;
         }
 
         _time += Time.deltaTime;
@@ -68,7 +68,7 @@ public class PlayerBackMoveCommand : PlayerCommand
     public override UniTask Exit()
     {
         _animator.SetBool("Move", false);
-        _rb.velocity = Vector3.zero;
+        _rb.linearVelocity = Vector3.zero;
         _player._visualTransform.localScale = new Vector3(false ? MathF.Abs(_player.transform.localScale.x) * -1: MathF.Abs(_player.transform.localScale.x), _player.transform.localScale.y, _player.transform.localScale.z);
         return UniTask.CompletedTask;
     }

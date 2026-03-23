@@ -85,13 +85,13 @@ public class PlayerJumpCommand : PlayerCommand
 
     public override void CommandFixedUpdate()
     {
-        _animator?.SetFloat("JumpUpVelocity", _rb.velocity.y);
+        _animator?.SetFloat("JumpUpVelocity", _rb.linearVelocity.y);
         if (!_isJumping) return;
         
         var gravityDirection = Mathf.Sign(_rb.gravityScale);
         // 変更点：重力の方向を考慮した計算式に修正
         //落下確認
-        if (_rb.velocity.y * gravityDirection <= 0 && _player.GroundCheck())
+        if (_rb.linearVelocity.y * gravityDirection <= 0 && _player.GroundCheck())
         {
             _isJumping = false;
             JumpEnd(_ct).Forget();
@@ -100,7 +100,7 @@ public class PlayerJumpCommand : PlayerCommand
 
         //コライダーが分かれている壁と設置するときにコライダーが引っ掛かる問題が再発したため、前方チェック追加
         //引っ掛かり解消のため、斜め下にBoxCastをするように変更しました。
-        Vector2 velocity = new Vector2(_moveSpeed, _rb.velocity.y);
+        Vector2 velocity = new Vector2(_moveSpeed, _rb.linearVelocity.y);
         var bounds = _player.Collider.bounds;
         var hit = Physics2D.BoxCast((Vector2)bounds.center - new Vector2(0, _colliderBuffar), (Vector2)bounds.size + new Vector2
             (0,_colliderBuffar * 2 * gravityDirection), 0, new Vector2(_moveSpeed, 0), _player.GimmickRaycastRange, _player.ForwardCheckLayer);
@@ -115,11 +115,11 @@ public class PlayerJumpCommand : PlayerCommand
             }
             else
             {
-                velocity = new Vector2(0, _rb.velocity.y);
+                velocity = new Vector2(0, _rb.linearVelocity.y);
             }
         }
 
-        _rb.velocity = velocity;
+        _rb.linearVelocity = velocity;
     }
 
     public override UniTask Exit()
@@ -130,7 +130,7 @@ public class PlayerJumpCommand : PlayerCommand
             box.size = _player.DefaultColliderSize;
         }
 
-        _rb.velocity = new Vector2(0, _rb.velocity.y);
+        _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
         return UniTask.CompletedTask;
     }
 
@@ -180,7 +180,7 @@ public class PlayerJumpCommand : PlayerCommand
         await UniTask.WaitForSeconds(_jumpInterval, cancellationToken: token);
         await UniTask.WaitUntil(() => !_player._pauseFlag, cancellationToken: token); //TODO:HERE
 
-        _rb.velocity = Vector2.zero;
+        _rb.linearVelocity = Vector2.zero;
         _rb.AddForce(new Vector2(0, velocity), ForceMode2D.Impulse);
 
         _isJumping = true;
@@ -189,7 +189,7 @@ public class PlayerJumpCommand : PlayerCommand
     async UniTask JumpEnd(CancellationToken token = default)
     {
         _animator.SetBool("Jump", false);
-        _rb.velocity = Vector2.zero;
+        _rb.linearVelocity = Vector2.zero;
         await UniTask.WaitForSeconds(_landingWaitTime, cancellationToken: token);
         await UniTask.WaitUntil(() => !_player._pauseFlag); //TODO:HERE
 

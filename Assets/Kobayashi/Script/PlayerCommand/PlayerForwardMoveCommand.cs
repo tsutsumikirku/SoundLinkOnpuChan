@@ -79,7 +79,7 @@ public class PlayerForwardMoveCommand : PlayerCommand
         _moveSpeed = _defaultMoveSpeed * _player.MoveDirection;
 
         //���l�̃��Z�b�g
-        _rb.velocity = Vector3.zero;
+        _rb.linearVelocity = Vector3.zero;
         _time = 0;
 
         _animator.SetBool("Move", true);
@@ -91,7 +91,7 @@ public class PlayerForwardMoveCommand : PlayerCommand
     {
         if (_time < _node.Second)
         {
-            var velocity = new Vector2(_moveSpeed, _rb.velocity.y);
+            var velocity = new Vector2(_moveSpeed, _rb.linearVelocity.y);
             var hit = _player.RaycastCheck(new Vector2(_moveSpeed, 0));
             if (hit && hit.transform.gameObject.TryGetComponent(out IPlayerPush push))
             {
@@ -109,7 +109,7 @@ public class PlayerForwardMoveCommand : PlayerCommand
                 if (_angleLimit < angle) velocity.x = 0;
             }
 
-            _rb.velocity = velocity;
+            _rb.linearVelocity = velocity;
 
             //step処理
             TryCheckStepAndClimb();
@@ -124,7 +124,7 @@ public class PlayerForwardMoveCommand : PlayerCommand
     public override UniTask Exit()
     {
         _animator.SetBool("Move", false);
-        _rb.velocity = Vector3.zero;
+        _rb.linearVelocity = Vector3.zero;
         return UniTask.CompletedTask;
     }
 

@@ -111,7 +111,7 @@ public class RollingCommand : PlayerCommand
             }
         }
 
-        _rb.velocity = Vector2.zero;
+        _rb.linearVelocity = Vector2.zero;
 
         return UniTask.CompletedTask;
     }
@@ -165,7 +165,7 @@ public class RollingCommand : PlayerCommand
                 var n = _rollingCurve.Evaluate(normalizedTime);
                 //Debug.Log($"{normalizedTime}:{n}");
     
-                _rb.velocity = new Vector2(velocityX * _direction * n, _rb.velocity.y);
+                _rb.linearVelocity = new Vector2(velocityX * _direction * n, _rb.linearVelocity.y);
     
                 timer += Time.deltaTime;
                 await UniTask.WaitForFixedUpdate(cancellationToken: token);
@@ -173,7 +173,7 @@ public class RollingCommand : PlayerCommand
     
             //接地するまでメソッドの終了を待機
             await UniTask.WaitUntil(() => _player.GroundCheck(), cancellationToken: token);
-            _rb.velocity = new Vector2(0, _rb.velocity.y);
+            _rb.linearVelocity = new Vector2(0, _rb.linearVelocity.y);
         }
         catch(OperationCanceledException)
         {

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _power: 6.94
   _second: 0
-  _defaultValue: 1
+  _defaultValue: 3
   _maxValue: 3
   _minValue: 0
   _info: 
