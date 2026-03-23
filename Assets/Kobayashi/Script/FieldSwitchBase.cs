@@ -19,8 +19,7 @@ public abstract class FieldSwitchBase : CancellableComponentBase
         {
             return;
         }
-        //今回でかいすいっち使わないからここで音鳴らす
-        CriSEManager.Instance.PlaySE("GimmickSE",0,1,0,true);
+        //CriSEManager.Instance.PlaySE("GimmickSE",0,1,0,true);
         ActiveEvent();
         _toggle = true;
         ActiveButtonAnimation();
