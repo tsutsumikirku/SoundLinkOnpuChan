@@ -9,9 +9,8 @@ public class NewCamera : MonoBehaviour, IBeginDragHandler, IDragHandler, UnityEn
     [SerializeField] private float cameraMoveTime = 5f;
     [SerializeField] private float cameraResetTime = 0.2f;
     [SerializeField] private Transform[] sequencePositions;
-    [SerializeField] private Transform leftMaxPosition;
-    [SerializeField] private Transform rightMaxPosition;
     [SerializeField] private Transform playerTransform;
+    private Transform goalTransform;
     [SerializeField] private UIButton cameraResetButton;
     [SerializeField] private Vector2 offset;    
     [SerializeField] private float moveSpeed = 5f;
@@ -29,6 +28,8 @@ public class NewCamera : MonoBehaviour, IBeginDragHandler, IDragHandler, UnityEn
     bool isPlayerTracking = true;
     Camera mainCamera;
     Transform cameraPosition;
+    float initialPlayerX;
+    float goalX;
     float boundMinX;
     float boundMaxX;
     float boundMinY;
@@ -43,11 +44,14 @@ public class NewCamera : MonoBehaviour, IBeginDragHandler, IDragHandler, UnityEn
         cameraResetButton.OnClick = CameraReset;
         mainCamera = GameObject.FindWithTag("MeinCamera").GetComponent<Camera>();
         playerTransform = GameObject.FindWithTag("Player").transform;
+        goalTransform = GameObject.FindWithTag("Goal").transform;
         cameraPosition = mainCamera.transform;
         defaultFOV = mainCamera.fieldOfView;
-        var goalPos = GameObject.FindWithTag("Goal").transform.position;
-        goalPos.z = cameraPosition.position.z;
-        cameraPosition.position = goalPos;
+        initialPlayerX = playerTransform.position.x;
+        goalX = goalTransform.position.x;
+        var initialPos = GetFollowTargetPosition();
+        initialPos.z = cameraPosition.position.z;
+        cameraPosition.position = initialPos;
         UpdateMovementBounds();
         foreach (var target in sequencePositions)
         {
@@ -60,7 +64,7 @@ public class NewCamera : MonoBehaviour, IBeginDragHandler, IDragHandler, UnityEn
             await tween.AsyncWaitForCompletion();
         }
         if(!isPlayerTracking)return;
-        var followPos = playerTransform.position + (Vector3)offset;
+        var followPos = GetFollowTargetPosition();
         followPos.z = cameraPosition.position.z;
         UpdateMovementBounds();
         followPos.x = Mathf.Clamp(followPos.x, boundMinX, boundMaxX);
@@ -133,8 +137,10 @@ public class NewCamera : MonoBehaviour, IBeginDragHandler, IDragHandler, UnityEn
         float halfHeight = focalDistance * Mathf.Tan(mainCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
         float halfWidth = halfHeight * mainCamera.aspect;
 
-        boundMinX = leftMaxPosition.position.x + halfWidth;
-        boundMaxX = rightMaxPosition.position.x - halfWidth;
+        float leftMaxX = Mathf.Min(initialPlayerX, goalX);
+        float rightMaxX = Mathf.Max(initialPlayerX, goalX);
+        boundMinX = leftMaxX;
+        boundMaxX = rightMaxX;
 
         boundMinY = minHight + halfHeight;
         boundMaxY = maxHight - halfHeight;
@@ -151,6 +157,13 @@ public class NewCamera : MonoBehaviour, IBeginDragHandler, IDragHandler, UnityEn
             boundMinY = boundMaxY = mid;
         }
     }
+    Vector3 GetFollowTargetPosition()
+    {
+        if (playerTransform == null || goalTransform == null)
+            return cameraPosition != null ? cameraPosition.position : Vector3.zero;
+        var midpoint = (playerTransform.position + goalTransform.position) * 0.5f;
+        return midpoint + (Vector3)offset;
+    }
     void Update()
     {
         if (isPlayerTracking)
@@ -158,8 +171,8 @@ public class NewCamera : MonoBehaviour, IBeginDragHandler, IDragHandler, UnityEn
             UpdateMovementBounds();
             // trueだった場合はカメラリセット
             cameraResetButton.gameObject.SetActive(false);
-            var target2 = (Vector2)playerTransform.position + offset;
-            var target3 = new Vector3(target2.x, target2.y, cameraPosition.position.z);
+            var target3 = GetFollowTargetPosition();
+            target3.z = cameraPosition.position.z;
             // clamp target to movement bounds
             target3.x = Mathf.Clamp(target3.x, boundMinX, boundMaxX);
             target3.y = Mathf.Clamp(target3.y, boundMinY, boundMaxY);
