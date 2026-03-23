@@ -67,5 +67,6 @@ public enum PlayerStateType
 {
     None,
     Second,
-    Power
+    Power,
+    Count
 }

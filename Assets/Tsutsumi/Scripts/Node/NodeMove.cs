@@ -94,6 +94,19 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         if (transform.parent.TryGetComponent<Hand>(out var hand))
         {
             GameObject newnode = Instantiate(this.gameObject);
+                NewNodeSetUp(newnode).Forget();
+        }
+        if (transform.parent.TryGetComponent<TimeLine>(out var desk))
+        {
+            desk.RemoveNode();
+            transform.SetParent(SafeArea);
+            transform.SetAsLastSibling();
+            desk.DeskUpdate();
+        }
+    }
+    async UniTask NewNodeSetUp(GameObject newnode)
+    {
+            await UniTask.Yield();
             newnode.transform.SetParent(this.transform.parent);
             newnode.transform.position = this.transform.position;
             var nodeMove = newnode.GetComponent<NodeMove>();
@@ -106,16 +119,7 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
             nodeMove.Canvas = this.Canvas;
             transform.SetParent(SafeArea);
             transform.SetAsLastSibling();
-        }
-        if (transform.parent.TryGetComponent<TimeLine>(out var desk))
-        {
-            desk.RemoveNode();
-            transform.SetParent(SafeArea);
-            transform.SetAsLastSibling();
-            desk.DeskUpdate();
-        }
     }
-
     public void OnBeginDrag(PointerEventData eventData)
     {
         // タッチの時間とノードの状態を初期化する

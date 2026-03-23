@@ -12,10 +12,12 @@ public class NodeVisual : CancellableComponentBase, INodeVisual, IPointerDownHan
 	public Action<float, GameObject> OnNodePlay;
 	Action<float> _onPowerChange;
 	Action<float> _onSecondChange;
+	Action<int> _onCountChange;
 	Action _copyAction;
 	Action _resetButton;
 	public Action<float> OnPowerChange { get => _onPowerChange; set => _onPowerChange = value; }
 	public Action<float> OnSecondChange { get => _onSecondChange; set => _onSecondChange = value; }
+	public Action<int> OnCountChange { get => _onCountChange; set => _onCountChange = value; }
 	public Action ResetButton { get => _resetButton; set => _resetButton = value; }
 	public Action CopyAction { get => _copyAction; set => _copyAction = value; }
 	[SerializeField, Header("アイコンのImage")] Image _iconImage;
@@ -42,6 +44,8 @@ public class NodeVisual : CancellableComponentBase, INodeVisual, IPointerDownHan
 	public void NumericEntryButton()
 	{
 		NumericEntry.Instance.ValueSlider.gameObject.SetActive(true);
+		NumericEntry.Instance.ValueChange = null;
+		NumericEntry.Instance.ValueCountChange = null;
 		switch (_playerStateType)
 		{
 			case PlayerStateType.Power:
@@ -53,6 +57,11 @@ public class NodeVisual : CancellableComponentBase, INodeVisual, IPointerDownHan
 				NumericEntry.Instance.Set();
 				NumericEntry.Instance.SetValue(_nodeDataContainer.Second, "秒");
 				NumericEntry.Instance.ValueChange = _onSecondChange;
+				break;
+			case PlayerStateType.Count:
+				NumericEntry.Instance.Set();
+				NumericEntry.Instance.SetValue(_nodeDataContainer.Power, "回");
+				NumericEntry.Instance.ValueCountChange = _onCountChange;
 				break;
 			case PlayerStateType.None:
 				NumericEntry.Instance.None();
@@ -90,10 +99,11 @@ public class NodeVisual : CancellableComponentBase, INodeVisual, IPointerDownHan
 		NumericEntryButton();
 		NumericEntry.Instance.SetValue(value, lavel);
 	}
-	private void OnDestroy()
+	protected override void OnDestroy()
 	{
 		if (!NumericEntry.Instance) return;
 		NumericEntry.Instance.ValueChange = null;
+		NumericEntry.Instance.ValueCountChange = null;
 		NumericEntry.Instance.CopyAction = null;
 		NumericEntry.Instance.ResetAction = null;
 		NumericEntry.Instance.ChangeAction = null;
@@ -103,6 +113,7 @@ public class NodeVisual : CancellableComponentBase, INodeVisual, IPointerDownHan
 		NumericEntry.Instance.ValueSlider.onValueChanged.RemoveAllListeners();
 		NumericEntry.Instance.ValueSlider.gameObject.SetActive(false);
 		NumericEntry.Instance.OnNodeDestroy();
+		base.OnDestroy();
 	}
 	/// <summary>
 	/// ノードのデータを設定します。

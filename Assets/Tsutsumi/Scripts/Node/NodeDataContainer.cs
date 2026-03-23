@@ -17,16 +17,23 @@ public class NodeDataContainer : MonoBehaviour, INode
     // NodeDataを引数に取り、そのデータを元にノードを初期化する
     public void Init(NodeData nodeData)
     {
-        _nodeData = new NodeData();
-        _nodeData.Power = nodeData.DefaultValue;
-        _nodeData.Second = nodeData.DefaultValue;
-        _nodeData.PlayerAction = nodeData.PlayerAction;
-        _nodeData.PlayerStateType = nodeData.PlayerStateType;
-        _nodeData.Info = nodeData.Info;
-        _nodeData.NodeName = nodeData.NodeName;
-        _nodeData.MaxValue = nodeData.MaxValue;
-        _nodeData.MinValue = nodeData.MinValue;
-        _nodeData.NodePassGet = nodeData.NodePassGet;
+        float defaultPower = nodeData.PlayerStateType == PlayerStateType.Count
+            ? Mathf.RoundToInt(nodeData.DefaultValue)
+            : nodeData.DefaultValue;
+
+        _nodeData = new NodeData
+        {
+            Power = defaultPower,
+            Second = nodeData.DefaultValue,
+            DefaultValue = defaultPower,
+            PlayerAction = nodeData.PlayerAction,
+            PlayerStateType = nodeData.PlayerStateType,
+            Info = nodeData.Info,
+            NodeName = nodeData.NodeName,
+            MaxValue = nodeData.MaxValue,
+            MinValue = nodeData.MinValue,
+            NodePassGet = nodeData.NodePassGet
+        };
         _uiInfoSet._text = _nodeData.Info;
         _nodeVisual.PlayerDataSet(nodeData.NodeSprite, nodeData.NodeName);
         switch (_nodeData.PlayerStateType)
@@ -36,6 +43,9 @@ public class NodeDataContainer : MonoBehaviour, INode
                 break;
             case PlayerStateType.Second:
                 _nodeVisual.NodeDataSet(_nodeData.Second.ToString());
+                break;
+            case PlayerStateType.Count:
+                _nodeVisual.NodeDataSet(Mathf.RoundToInt(_nodeData.Power).ToString());
                 break;
         }
         _nodeVisual.OnPowerChange += (x) =>
@@ -74,6 +84,25 @@ public class NodeDataContainer : MonoBehaviour, INode
             _nodeVisual.SetValue(_nodeData.Second, "秒");
             NumericEntry.Instance.ValueSlider.value = _nodeData.Second;
         };
+        _nodeVisual.OnCountChange += (x) =>
+        {
+            UndoSetPower(_nodeData.Power);
+            float next = _nodeData.Power + x;
+            if (next > _nodeData.MaxValue)
+            {
+                next = _nodeData.MaxValue;
+            }
+            else if (next < _nodeData.MinValue)
+            {
+                next = _nodeData.MinValue;
+            }
+
+            int intNext = Mathf.RoundToInt(next);
+            _nodeData.Power = intNext;
+            _nodeVisual.NodeDataSet(intNext.ToString());
+            _nodeVisual.SetValue(intNext, "回");
+            NumericEntry.Instance.ValueSlider.value = intNext;
+        };
         _nodeVisual.ResetButton = () =>
         {
             _nodeData.Power = _nodeData.DefaultValue;
@@ -87,6 +116,10 @@ public class NodeDataContainer : MonoBehaviour, INode
                 case PlayerStateType.Power:
                     _nodeVisual.NodeDataSet(_nodeData.Power.ToString());
                     NumericEntry.Instance.ValueSlider.value = _nodeData.Power;
+                    break;
+                case PlayerStateType.Count:
+                    _nodeVisual.NodeDataSet(Mathf.RoundToInt(_nodeData.Power).ToString());
+                    NumericEntry.Instance.ValueSlider.value = Mathf.RoundToInt(_nodeData.Power);
                     break;
             }
             Debug.Log("ノードのデータをリセットしました: " + _nodeData.PlayerAction.ToString());
@@ -106,6 +139,9 @@ public class NodeDataContainer : MonoBehaviour, INode
                 break;
             case PlayerStateType.Second:
                 _nodeVisual.NodeDataSet(_nodeData.Second.ToString());
+                break;
+            case PlayerStateType.Count:
+                _nodeVisual.NodeDataSet(Mathf.RoundToInt(_nodeData.Power).ToString());
                 break;
         }
         _nodeVisual.OnPowerChange += (x) =>
@@ -130,7 +166,10 @@ public class NodeDataContainer : MonoBehaviour, INode
             }
             _nodeData.Power = next;
             _nodeVisual.NodeDataSet(_nodeData.Power.ToString());
-            _nodeVisual.SetValue(_nodeData.Power, "パワー");
+            if(_nodeData.PlayerStateType == PlayerStateType.Power)
+                _nodeVisual.SetValue(_nodeData.Power, "パワー");
+            else if(_nodeData.PlayerStateType == PlayerStateType.Count)
+                _nodeVisual.SetValue((int)_nodeData.Power, "回");
             NumericEntry.Instance.ValueSlider.value = _nodeData.Power;
         };
         _nodeVisual.OnSecondChange += (x) =>
@@ -158,6 +197,33 @@ public class NodeDataContainer : MonoBehaviour, INode
             _nodeVisual.SetValue(_nodeData.Second, "秒");
             NumericEntry.Instance.ValueSlider.value = _nodeData.Second;
         };
+        _nodeVisual.OnCountChange += (x) =>
+        {
+            if (transform.parent.gameObject.TryGetComponent<TimeLine>(out var timeLine))
+            {
+                timeLine.RemoveNode();
+            }
+            else
+            {
+                UndoSetPower(_nodeData.Power);
+            }
+
+            float next = _nodeData.Power + x;
+            if (next > _nodeData.MaxValue)
+            {
+                next = _nodeData.MaxValue;
+            }
+            else if (next < _nodeData.MinValue)
+            {
+                next = _nodeData.MinValue;
+            }
+
+            int intNext = Mathf.RoundToInt(next);
+            _nodeData.Power = intNext;
+            _nodeVisual.NodeDataSet(intNext.ToString());
+            _nodeVisual.SetValue(intNext, "回");
+            NumericEntry.Instance.ValueSlider.value = intNext;
+        };
         _nodeVisual.ResetButton = () =>
         {
             _nodeData.Power = _nodeData.DefaultValue;
@@ -172,6 +238,10 @@ public class NodeDataContainer : MonoBehaviour, INode
                     _nodeVisual.NodeDataSet(_nodeData.Power.ToString());
                     NumericEntry.Instance.ValueSlider.value = _nodeData.Power;
                     break;
+                case PlayerStateType.Count:
+                    _nodeVisual.NodeDataSet(Mathf.RoundToInt(_nodeData.Power).ToString());
+                    NumericEntry.Instance.ValueSlider.value = Mathf.RoundToInt(_nodeData.Power);
+                    break;
             }
             Debug.Log("ノードのデータをリセットしました: " + _nodeData.PlayerAction.ToString());
         };
@@ -182,9 +252,20 @@ public class NodeDataContainer : MonoBehaviour, INode
     {
         UndoUI.Add(value, x =>
         {
-            _nodeData.Power = (float)x;
-            _nodeVisual.NodeDataSet(_nodeData.Power.ToString());
+            if (_nodeData.PlayerStateType == PlayerStateType.Count)
+            {
+                _nodeData.Power = Mathf.RoundToInt((float)x);
+                _nodeVisual.NodeDataSet(Mathf.RoundToInt(_nodeData.Power).ToString());
+            }
+            else
+            {
+                _nodeData.Power = (float)x;
+                _nodeVisual.NodeDataSet(_nodeData.Power.ToString());
+            }
+            if(_nodeData.PlayerStateType == PlayerStateType.Power)
             _nodeVisual.SetValue(_nodeData.Power, "パワー");
+            else if(_nodeData.PlayerStateType == PlayerStateType.Count)
+                _nodeVisual.SetValue((int)_nodeData.Power, "回数");
         }, gameObject );    
     }
     void UndoSetSecond(float value)
@@ -252,6 +333,32 @@ public class NodeDataContainer : MonoBehaviour, INode
                     }
                 };
                 break;
+            case PlayerStateType.Count:
+                NumericEntry.Instance.ValueSlider.maxValue = _nodeData.MaxValue;
+                NumericEntry.Instance.ValueSlider.minValue = _nodeData.MinValue;
+                NumericEntry.Instance.ValueSlider.value = _nodeData.Power;
+                NumericEntry.Instance.ValueSlider.onValueChanged.RemoveAllListeners();
+                NumericEntry.Instance.ValueSlider.onValueChanged.AddListener((float val) =>
+                {
+                    int intVal = Mathf.RoundToInt(val);
+                    _nodeData.Power = intVal;
+                    _nodeVisual.SetValue(intVal, "回");
+                    _nodeVisual.NodeDataSet(_nodeData.Power.ToString());
+                });
+                NumericEntry.Instance.OnSliderValueSet = val =>
+                {
+                    if (transform.parent.gameObject.TryGetComponent<TimeLine>(out var timeLine))
+                    {
+                        timeLine.RemoveNode();   
+                    }
+                    else
+                    {
+                        int intVal = Mathf.RoundToInt(val);
+                        UndoSetPower(intVal);
+                    }
+                };
+                break;
+
         }
     }
     public void NodeDataInit(NodeData nodeData)
@@ -275,6 +382,7 @@ public interface INodeVisual
 {
     Action<float> OnPowerChange { get; set; }
     Action<float> OnSecondChange { get; set; }
+    Action<int> OnCountChange { get; set; }
     Action ResetButton { get; set; }
     void SetValue(float value, string lavel);
     void PlayerTypeSet(PlayerStateType playerState);
