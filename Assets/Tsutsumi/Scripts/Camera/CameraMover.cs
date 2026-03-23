@@ -25,16 +25,61 @@ public class CameraMover : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     
     void Awake()
     {
-        _cinemachineVirtual = GameObject.FindWithTag("MeinCamera").GetComponent<CinemachineVirtualCamera>();
-        _cinemachineConfiner = GameObject.FindWithTag("MainCamera").GetComponent<CinemachineConfiner2D>();
+        if (_cinemachineVirtual == null)
+        {
+            var mainCameraObj = GameObject.FindWithTag("MainCamera");
+            if (mainCameraObj != null)
+                _cinemachineVirtual = mainCameraObj.GetComponent<CinemachineVirtualCamera>();
+        }
+
+        if (_cinemachineVirtual == null)
+        {
+            Debug.LogError("CameraMover: CinemachineVirtualCamera が見つかりません。Inspector で設定するか MainCamera タグのオブジェクトを確認してください。");
+            enabled = false;
+            return;
+        }
+
+        if (_cinemachineConfiner == null)
+            _cinemachineConfiner = _cinemachineVirtual.GetComponent<CinemachineConfiner2D>();
+
         _defaultFOV = _cinemachineVirtual.m_Lens.FieldOfView;
         _default = _cinemachineVirtual.Follow;
-        _target = Instantiate(_target, FindAnyObjectByType<CameraChanger>().transform);
+        if (_default == null)
+        {
+            Debug.LogError("CameraMover: VirtualCamera の Follow が未設定です。");
+            enabled = false;
+            return;
+        }
+
+        var cameraChanger = FindAnyObjectByType<CameraChanger>();
+        if (cameraChanger == null)
+        {
+            Debug.LogError("CameraMover: CameraChanger がシーンに見つかりません。");
+            enabled = false;
+            return;
+        }
+
+        if (_target == null)
+        {
+            Debug.LogError("CameraMover: _target が Inspector で未設定です。");
+            enabled = false;
+            return;
+        }
+
+        _target = Instantiate(_target, cameraChanger.transform);
         _playerPos = _default.position;
         _playerPos = new Vector3(_playerPos.x + _leftCameraPlus, _playerPos.y, _playerPos.z);
         _target.position = _playerPos;
 
-        _goalPos = FindAnyObjectByType<GoalBehaviour>().transform.position;
+        var goalBehaviour = FindAnyObjectByType<GoalBehaviour>();
+        if (goalBehaviour == null)
+        {
+            Debug.LogError("CameraMover: GoalBehaviour がシーンに見つかりません。");
+            enabled = false;
+            return;
+        }
+
+        _goalPos = goalBehaviour.transform.position;
         _goalPos = new Vector3(_goalPos.x + _rightCameraPlus, _goalPos.y, _goalPos.z);
     }
 
