@@ -16,7 +16,7 @@ MonoBehaviour:
   _second: 0
   _defaultValue: 3
   _maxValue: 3
-  _minValue: 3
+  _minValue: 1
   _info: "\u30B8\u30E3\u30F3\u30D7\u3059\u308B\u3088"
   _nodeName: "\u3074\u3087\u3093"
   _nodeSprite: UI_Pidtogram/UI_Pidtogram_Pyon
