@@ -171,7 +171,7 @@ MonoBehaviour:
   _nodeSpace: 0
   _location: -92
   _maxNodeCount: 3
-  _nodePrefab: {fileID: 0}
+  _nodePrefab: {fileID: 2274550536023982582, guid: d0af550a3add5cb4ba1dd78a230527b8, type: 3}
   _particle: []
   _defaultWidth: 0
   _vibrateMinIntervalMs: 120
@@ -3145,9 +3145,9 @@ MonoBehaviour:
   _nodePrefab: {fileID: 2274550536023982582, guid: d0af550a3add5cb4ba1dd78a230527b8, type: 3}
   _nodeData:
   - {fileID: 11400000, guid: 4f6dd5cab74086744a78007b968b7184, type: 2}
-  - {fileID: 11400000, guid: 1bc731b2868323541a3afe2dd128049a, type: 2}
+  - {fileID: 11400000, guid: 3166a3b21e281c3428223116a44c096c, type: 2}
   _hand: {fileID: 2007839577567606302}
-  _nodeCount: 1
+  _nodeCount: 10
   _timeScale: 1
   _inGameUI:
   - {fileID: 8274186753197877713}
@@ -5222,8 +5222,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3772323256791102060}
   m_HandleRect: {fileID: 3685175727747867913}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.4999998
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12966,7 +12966,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3346049465123827029, guid: a4371ce896ca51a4bae1af7fe70fa151, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -581.4265
+      value: -581.4263
       objectReference: {fileID: 0}
     - target: {fileID: 3346049465123827029, guid: a4371ce896ca51a4bae1af7fe70fa151, type: 3}
       propertyPath: m_AnchoredPosition.y
