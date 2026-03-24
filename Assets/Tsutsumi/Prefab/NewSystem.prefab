@@ -3145,6 +3145,7 @@ MonoBehaviour:
   _nodePrefab: {fileID: 2274550536023982582, guid: d0af550a3add5cb4ba1dd78a230527b8, type: 3}
   _nodeData:
   - {fileID: 11400000, guid: 4f6dd5cab74086744a78007b968b7184, type: 2}
+  - {fileID: 11400000, guid: 1bc731b2868323541a3afe2dd128049a, type: 2}
   _hand: {fileID: 2007839577567606302}
   _nodeCount: 1
   _timeScale: 1
@@ -5221,8 +5222,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3772323256791102060}
   m_HandleRect: {fileID: 3685175727747867913}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.4999998
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12965,7 +12966,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3346049465123827029, guid: a4371ce896ca51a4bae1af7fe70fa151, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -581.4264
+      value: -581.4265
       objectReference: {fileID: 0}
     - target: {fileID: 3346049465123827029, guid: a4371ce896ca51a4bae1af7fe70fa151, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -14624,6 +14625,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 903314388056184880, guid: ce377d43a55326f4e9b92608d47bf667, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 435757898608978619, guid: d8420e8c0dc2f174989a88f44b043bca, type: 3}
     - target: {fileID: 1024992400194322168, guid: ce377d43a55326f4e9b92608d47bf667, type: 3}
       propertyPath: m_fontAsset
       value: 
@@ -14748,6 +14753,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3701352137593825282, guid: ce377d43a55326f4e9b92608d47bf667, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 4141731392130242268, guid: 2f523fd12b170c94db3e7e77146703ba, type: 3}
     - target: {fileID: 4181252708124178860, guid: ce377d43a55326f4e9b92608d47bf667, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 315.3
@@ -14800,6 +14809,10 @@ PrefabInstance:
       propertyPath: _panelVisibleTime
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 7339167760098464443, guid: ce377d43a55326f4e9b92608d47bf667, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 4141731392130242268, guid: 2f523fd12b170c94db3e7e77146703ba, type: 3}
     - target: {fileID: 7800086641173151929, guid: ce377d43a55326f4e9b92608d47bf667, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
