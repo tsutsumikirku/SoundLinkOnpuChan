@@ -308,18 +308,23 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (!_isNodeDragActive)
-        {
-            _scaleTween?.Kill();
-            _scaleTween = transform.DOScale(_touchStartScale, 0.2f).SetEase(Ease.OutBack);
-        }
-
         _isPointerDown = false;
         _holdVisualRequestId++;
         _isHoldVisualApplied = false;
         _movedDuringHold = false;
         _holdCanceled = false;
         _isMoveModeEntered = false;
+
+        if (!_isNodeDragActive)
+        {
+            _scaleTween?.Kill();
+            _scaleTween = transform.DOScale(_touchStartScale, 0.2f).SetEase(Ease.OutBack);
+            if (_isParentDragStarted)
+            {
+                _parentEndDragHandler?.OnEndDrag(eventData);
+                _isParentDragStarted = false;
+            }
+        }
     }
 }
 public enum NodeState

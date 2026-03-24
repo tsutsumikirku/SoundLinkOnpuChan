@@ -8,6 +8,7 @@ public class NewScrollView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     float parentWidth;
     float defaultY;
     RectTransform rectTransform;
+    RectTransform parentRectTransform;
 
     // inertia variables
     bool dragging = false;
@@ -18,7 +19,8 @@ public class NewScrollView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
-        parentWidth = ((RectTransform)transform.parent).rect.width;
+        parentRectTransform = transform.parent as RectTransform;
+        UpdateParentWidth();
         defaultY = rectTransform.anchoredPosition.y;
         rectTransform.anchoredPosition = new Vector2(0, defaultY);
     }
@@ -41,20 +43,18 @@ public class NewScrollView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
                 if (Mathf.Abs(velocity) < minVelocity)
                     velocity = 0f;
 
-                // clamp to bounds
-                float minX = -rectTransform.rect.width + parentWidth;
-                if (rectTransform.anchoredPosition.x > 0f)
-                {
-                    rectTransform.anchoredPosition = new Vector2(0f, defaultY);
-                    velocity = 0f;
-                }
-                else if (rectTransform.anchoredPosition.x < minX)
-                {
-                    rectTransform.anchoredPosition = new Vector2(minX, defaultY);
-                    velocity = 0f;
-                }
+                ClampToBounds();
             }
         }
+    }
+
+    void OnRectTransformDimensionsChange()
+    {
+        if (rectTransform == null)
+            return;
+
+        UpdateParentWidth();
+        ClampToBounds();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -72,22 +72,32 @@ public class NewScrollView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         if (Time.unscaledDeltaTime > 0f)
             velocity = eventData.delta.x / Time.unscaledDeltaTime;
 
-        // clamp while dragging as before
-        if (rectTransform.anchoredPosition.x > 0)
-        {
-            rectTransform.anchoredPosition = new Vector2(0, defaultY);
-            velocity = 0f;
-        }
-        else if (rectTransform.anchoredPosition.x < -rectTransform.rect.width + parentWidth)
-        {
-            rectTransform.anchoredPosition = new Vector2(-rectTransform.rect.width + parentWidth, defaultY);
-            velocity = 0f;
-        }
+        ClampToBounds();
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         dragging = false;
         // velocity already set in OnDrag; inertia will be applied in Update
+    }
+
+    void UpdateParentWidth()
+    {
+        if (parentRectTransform == null)
+            parentRectTransform = transform.parent as RectTransform;
+
+        parentWidth = parentRectTransform != null ? parentRectTransform.rect.width : 0f;
+    }
+
+    void ClampToBounds()
+    {
+        float minX = Mathf.Min(0f, parentWidth - rectTransform.rect.width);
+        float clampedX = Mathf.Clamp(rectTransform.anchoredPosition.x, minX, 0f);
+
+        if (!Mathf.Approximately(clampedX, rectTransform.anchoredPosition.x))
+        {
+            rectTransform.anchoredPosition = new Vector2(clampedX, defaultY);
+            velocity = 0f;
+        }
     }
 }
