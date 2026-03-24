@@ -251,23 +251,11 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     //ポインターが離されたときのメソッド
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!_isNodeDragActive)
+        if (_isParentDragStarted)
         {
-            if (_isParentDragStarted)
-            {
-                _parentEndDragHandler?.OnEndDrag(eventData);
-                _isParentDragStarted = false;
-            }
-            return;
+            _parentEndDragHandler?.OnEndDrag(eventData);
+            _isParentDragStarted = false;
         }
-
-        _scaleTween = transform.DOScale(_touchStartScale, 0.2f).SetEase(Ease.OutBack);
-        if (TryEventToTimeLine(eventData, out var deck))
-        {
-            deck.AddNode(this); // ドラッグがデッキにドロップされた場合は、デッキにノードを追加
-            return; // ドラッグがデッキにドロップされた場合は何もしない
-        }
-        Destroy(this.gameObject); // ドラッグがデッキにドロップされなかった場合はノードを削除      
     }
     /// <summary>
     /// TimeLineが取得できた場合trueを返します。
@@ -283,6 +271,13 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
             if (item.gameObject.TryGetComponent<TimeLine>(out var desk))
             {
                 deck = desk;
+                return true;
+            }
+
+            var parentDesk = item.gameObject.GetComponentInParent<TimeLine>();
+            if (parentDesk != null)
+            {
+                deck = parentDesk;
                 return true;
             }
         }
@@ -308,6 +303,8 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        bool shouldFinalizeDrop = _isNodeDragActive || _isMoveModeEntered;
+
         _isPointerDown = false;
         _holdVisualRequestId++;
         _isHoldVisualApplied = false;
@@ -315,15 +312,27 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         _holdCanceled = false;
         _isMoveModeEntered = false;
 
-        if (!_isNodeDragActive)
+        _scaleTween?.Kill();
+        _scaleTween = transform.DOScale(_touchStartScale, 0.2f).SetEase(Ease.OutBack);
+
+        if (shouldFinalizeDrop)
         {
-            _scaleTween?.Kill();
-            _scaleTween = transform.DOScale(_touchStartScale, 0.2f).SetEase(Ease.OutBack);
-            if (_isParentDragStarted)
+            if (TryEventToTimeLine(eventData, out var deck))
             {
-                _parentEndDragHandler?.OnEndDrag(eventData);
-                _isParentDragStarted = false;
+                deck.AddNode(this);
             }
+            else
+            {
+                Destroy(this.gameObject);
+            }
+
+            _isNodeDragActive = false;
+        }
+
+        if (_isParentDragStarted)
+        {
+            _parentEndDragHandler?.OnEndDrag(eventData);
+            _isParentDragStarted = false;
         }
     }
 }
