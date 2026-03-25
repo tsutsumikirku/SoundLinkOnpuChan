@@ -107,8 +107,8 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     async UniTask NewNodeSetUp(GameObject newnode)
     {
             await UniTask.Yield();
-            newnode.transform.SetParent(this.transform.parent);
-            newnode.transform.position = this.transform.position;
+            newnode.transform.SetParent(this.transform.parent, worldPositionStays: true);
+            newnode.transform.localPosition = this.transform.localPosition;
             var nodeMove = newnode.GetComponent<NodeMove>();
             nodeMove.NodeDataContainer.Init(NodeDataContainer.NodeData);
             nodeMove._defaultScale = _touchStartScale;
@@ -117,7 +117,7 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
             newnode.transform.localScale = _touchStartScale;
             nodeMove.SafeArea = this.SafeArea;
             nodeMove.Canvas = this.Canvas;
-            transform.SetParent(SafeArea);
+            transform.SetParent(SafeArea, worldPositionStays: true);
             transform.SetAsLastSibling();
     }
     public void OnBeginDrag(PointerEventData eventData)
