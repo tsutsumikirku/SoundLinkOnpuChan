@@ -105,7 +105,7 @@ EditorBuildSettings:
     path: Assets/_Stage/OK/STAGE1A.unity
     guid: ba0593029fcdc2547b3621d94968acee
   - enabled: 1
-    path: Assets/_Stage/OK/STAGE3A 1.unity
+    path: Assets/_Stage/OK/STAGE3A1.unity
     guid: 56e1edb7380687643b15466a73f03531
   - enabled: 1
     path: Assets/_Stage/OK/STAGE3B.unity
@@ -123,7 +123,7 @@ EditorBuildSettings:
     path: Assets/_Stage/OK/STAGE3A.unity
     guid: 83ab0d508c93cd9409d9d7967b01050e
   - enabled: 1
-    path: Assets/_Stage/OK/STAGE6Botu.unity
+    path: Assets/_Stage/OK/STAGE6B.unity
     guid: db535aa9908e7354390fbbe3b7b54079
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
