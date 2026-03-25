@@ -74,6 +74,11 @@ public class NewScrollView : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
         ClampToBounds();
     }
+    public void Scroll(float delta)
+    {
+        rectTransform.anchoredPosition += new Vector2(delta, 0);
+        ClampToBounds();
+    }
 
     public void OnEndDrag(PointerEventData eventData)
     {

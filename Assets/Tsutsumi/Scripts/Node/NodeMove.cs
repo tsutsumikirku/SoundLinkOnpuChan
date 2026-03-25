@@ -29,6 +29,8 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     bool _holdCanceled = false;
     float _pointerDownTime = 0f;
     Vector2 _pointerDownPosition = Vector2.zero;
+    Vector2 _currentPointerPosition = Vector2.zero;
+    bool _hasPointerPosition = false;
     bool _isPointerDown = false;
     bool _isHoldVisualApplied = false;
     int _holdVisualRequestId = 0;
@@ -43,6 +45,70 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     bool _isParentDragStarted = false;
     public Tween Tween { get => _tween; set => _tween = value; }
     public Transform SafeArea;
+
+    bool TryEventToCursorAction(PointerEventData eventData, out OnCursorAction cursorAction)
+    {
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        foreach (var item in results)
+        {
+            if (item.gameObject.TryGetComponent<OnCursorAction>(out var action))
+            {
+                cursorAction = action;
+                return true;
+            }
+
+            var parentAction = item.gameObject.GetComponentInParent<OnCursorAction>();
+            if (parentAction != null)
+            {
+                cursorAction = parentAction;
+                return true;
+            }
+        }
+
+        cursorAction = null;
+        return false;
+    }
+
+    bool TryPositionToCursorAction(Vector2 position, out OnCursorAction cursorAction)
+    {
+        if (EventSystem.current == null)
+        {
+            cursorAction = null;
+            return false;
+        }
+
+        var eventData = new PointerEventData(EventSystem.current)
+        {
+            position = position
+        };
+        return TryEventToCursorAction(eventData, out cursorAction);
+    }
+
+    void Update()
+    {
+        if (!_isPointerDown)
+        {
+            return;
+        }
+
+        if (Input.touchCount > 0)
+        {
+            _currentPointerPosition = Input.GetTouch(0).position;
+            _hasPointerPosition = true;
+        }
+        else if (Input.mousePresent)
+        {
+            _currentPointerPosition = Input.mousePosition;
+            _hasPointerPosition = true;
+        }
+
+        if (_hasPointerPosition && TryPositionToCursorAction(_currentPointerPosition, out var cursorAction))
+        {
+            cursorAction.OnCursorEnter();
+        }
+    }
+
     public async UniTask Init(ITable table)
     {
         SafeArea = FindAnyObjectByType<Canvas>().transform;
@@ -94,7 +160,7 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         if (transform.parent.TryGetComponent<Hand>(out var hand))
         {
             GameObject newnode = Instantiate(this.gameObject);
-                NewNodeSetUp(newnode).Forget();
+            NewNodeSetUp(newnode).Forget();
         }
         if (transform.parent.TryGetComponent<TimeLine>(out var desk))
         {
@@ -203,6 +269,9 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     //ポインターがドラッグされているときのメソッド
     public void OnDrag(PointerEventData eventData)
     {
+        _currentPointerPosition = eventData.position;
+        _hasPointerPosition = true;
+
         if (!_isNodeDragActive)
         {
             float elapsed = Time.unscaledTime - _dragBeginTime;
@@ -247,6 +316,7 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         }
 
         ((RectTransform)transform).anchoredPosition = ((RectTransform)transform).anchoredPosition + eventData.delta / Canvas.scaleFactor;
+        
     }
     //ポインターが離されたときのメソッド
     public void OnEndDrag(PointerEventData eventData)
@@ -297,6 +367,8 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         _holdVisualRequestId++;
         _pointerDownTime = Time.unscaledTime;
         _pointerDownPosition = eventData.position;
+        _currentPointerPosition = eventData.position;
+        _hasPointerPosition = true;
         StartHoldVisualTimer(_holdVisualRequestId).Forget();
         CriSEManager.Instance.PlaySE(_nodeCatch);
     }
@@ -311,6 +383,7 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         _movedDuringHold = false;
         _holdCanceled = false;
         _isMoveModeEntered = false;
+        _hasPointerPosition = false;
 
         _scaleTween?.Kill();
         _scaleTween = transform.DOScale(_touchStartScale, 0.2f).SetEase(Ease.OutBack);
