@@ -13,13 +13,11 @@ public class TimeScaleButton : MonoBehaviour
     [SerializeField]Sprite _oneSprite;
     [SerializeField]Sprite _twoSprite;
     [SerializeField] TextMeshProUGUI _text;
-    UIButton _button;
     Image _image;
     InGameUIManager uiManager;
     string _originalText;
     void Awake()
     {
-        _button = GetComponent<UIButton>();
         _image = GetComponent<Image>();
         uiManager = FindAnyObjectByType<InGameUIManager>();
         uiManager.TimeScaleChange += TimeScaleChange;
@@ -32,7 +30,7 @@ public class TimeScaleButton : MonoBehaviour
         {
             uiManager.TimeScale = _ChangeScale;
             CriSEManager.Instance.PlaySE("SE_InGame_Speed_Triple", playOneShot: true);
-            _text.text = _originalText.Replace("〇", 3.ToString());
+            _text.text = _originalText.Replace("〇", "3");
             return;
         }
         CriSEManager.Instance.PlaySE("SE_InGame_Speed_Normal", playOneShot: true);

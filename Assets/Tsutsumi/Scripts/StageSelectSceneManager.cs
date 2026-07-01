@@ -57,10 +57,6 @@ public class StageSelectSceneManager : MonoBehaviour
             {
                 _beforeState = StageSelectState.None;
             }
-            if (state == default)
-            {
-                state = StageSelectState.None;
-            }
             switch (state)
             {
                 // ステージがクリアされていない場合

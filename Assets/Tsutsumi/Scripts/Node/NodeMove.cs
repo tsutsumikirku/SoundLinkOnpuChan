@@ -10,7 +10,14 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     [SerializeField, Header("ノードの移動時間を設定してください、0番目につかんだ時、1番目に放した時")] float[] _moveTime = { 0.2f, 0.5f };
     [SerializeField, Header("ノードのイージングを設定してください")] Ease _ease = Ease.OutBack;
     [SerializeField, Header("ノードをつかんだ時のSEのタグを設定してください")] string _nodeCatch;
-    [SerializeField, Header("長押し判定時間（秒）")] float _holdDuration = 0.3f;
+    float _holdDuration{ get{
+            if(this.transform.parent.TryGetComponent<Hand>(out var hand)) 
+            return 0f; 
+            else 
+            return holdDuration;
+            }
+        }
+    [SerializeField, Header("長押し中のノードの大きさの倍率を設定してください")] float holdDuration = 0.3f;
     [SerializeField, Header("静止判定の移動しきい値（px）")] float _stillThreshold = 16f;
     [SerializeField, Header("親へ横ドラッグを渡すしきい値（px）")] float _horizontalDragThreshold = 12f;
     [SerializeField, Header("長押し再判定の復帰半径（px）")] float _rearmRadius = 24f;
@@ -38,6 +45,7 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     bool _isMoveModeEntered = false;
     Vector3 _defaultScale = Vector3.one;
     Vector3 _touchStartScale = Vector3.one;
+    Vector2 _initialAnchoredPosition = Vector2.zero;
     Transform _dragStartParent;
     IBeginDragHandler _parentBeginDragHandler;
     IDragHandler _parentDragHandler;
@@ -172,27 +180,45 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     }
     async UniTask NewNodeSetUp(GameObject newnode)
     {
-            await UniTask.Yield();
+            // yield前にtransform依存の値をすべてキャプチャする
+            // （yield中にOnPointerUpがDestroyを呼んでもセットアップが完了できるようにする）
+            Transform originalParent = transform.parent;
             var srcRect = (RectTransform)transform;
+            var anchorMin = srcRect.anchorMin;
+            var anchorMax = srcRect.anchorMax;
+            var pivot = srcRect.pivot;
+            var sizeDelta = srcRect.sizeDelta;
+            var rotation = srcRect.localRotation;
+            var initialPos = _initialAnchoredPosition;
+            var nodeData = NodeDataContainer.NodeData;
+            var startScale = _touchStartScale;
+            var safeAreaRef = SafeArea;
+            var canvasRef = Canvas;
+
+            await UniTask.Yield();
+
             var dstRect = (RectTransform)newnode.transform;
 
-            newnode.transform.SetParent(this.transform.parent, worldPositionStays: false);
-            dstRect.anchorMin = srcRect.anchorMin;
-            dstRect.anchorMax = srcRect.anchorMax;
-            dstRect.pivot = srcRect.pivot;
-            dstRect.anchoredPosition = srcRect.anchoredPosition;
-            dstRect.sizeDelta = srcRect.sizeDelta;
-            dstRect.localRotation = srcRect.localRotation;
+            newnode.transform.SetParent(originalParent, worldPositionStays: false);
+            dstRect.anchorMin = anchorMin;
+            dstRect.anchorMax = anchorMax;
+            dstRect.pivot = pivot;
+            dstRect.anchoredPosition = initialPos;
+            dstRect.sizeDelta = sizeDelta;
+            dstRect.localRotation = rotation;
             var nodeMove = newnode.GetComponent<NodeMove>();
-            nodeMove.NodeDataContainer.Init(NodeDataContainer.NodeData);
-            nodeMove._defaultScale = _touchStartScale;
-            nodeMove._touchStartScale = _touchStartScale;
+            nodeMove.NodeDataContainer.Init(nodeData);
+            nodeMove._defaultScale = startScale;
+            nodeMove._touchStartScale = startScale;
             nodeMove._isMoveModeEntered = false;
-            dstRect.localScale = _touchStartScale;
-            nodeMove.SafeArea = this.SafeArea;
-            nodeMove.Canvas = this.Canvas;
-            transform.SetParent(SafeArea, worldPositionStays: true);
-            transform.SetAsLastSibling();
+            dstRect.localScale = startScale;
+            nodeMove.SafeArea = safeAreaRef;
+            nodeMove.Canvas = canvasRef;
+            if (this != null)
+            {
+                transform.SetParent(safeAreaRef, worldPositionStays: true);
+                transform.SetAsLastSibling();
+            }
     }
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -219,6 +245,11 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         if (_tween != null)
         {
             if (_tween.IsActive()) _tween.Kill();
+        }
+
+        if (_holdDuration <= 0f && !_isNodeDragActive)
+        {
+            StartNodeDrag(eventData);
         }
     }
 
@@ -372,12 +403,16 @@ public class NodeMove : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         _isNodeDragActive = false;
         _isMoveModeEntered = false;
         _touchStartScale = transform.localScale;
+        _initialAnchoredPosition = ((RectTransform)transform).anchoredPosition;
         _holdVisualRequestId++;
         _pointerDownTime = Time.unscaledTime;
         _pointerDownPosition = eventData.position;
         _currentPointerPosition = eventData.position;
         _hasPointerPosition = true;
-        StartHoldVisualTimer(_holdVisualRequestId).Forget();
+        if (_holdDuration > 0f)
+        {
+            StartHoldVisualTimer(_holdVisualRequestId).Forget();
+        }
         CriSEManager.Instance.PlaySE(_nodeCatch);
     }
 

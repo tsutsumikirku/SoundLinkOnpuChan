@@ -3092,7 +3092,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3804060685009893663, guid: 37830efc4dd3a484a88f03d0204603cb, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -581.4265
+      value: -581.42633
       objectReference: {fileID: 0}
     - target: {fileID: 3940314721400560813, guid: 37830efc4dd3a484a88f03d0204603cb, type: 3}
       propertyPath: m_Mesh
@@ -3343,11 +3343,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 37830efc4dd3a484a88f03d0204603cb, type: 3}
---- !u!1 &403111026 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 363270144146294504, guid: 37830efc4dd3a484a88f03d0204603cb, type: 3}
-  m_PrefabInstance: {fileID: 403111025}
-  m_PrefabAsset: {fileID: 0}
 --- !u!43 &441974328
 Mesh:
   m_ObjectHideFlags: 0
@@ -17261,7 +17256,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1934968844}
-  - component: {fileID: 1934968843}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -17269,20 +17263,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1934968843
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1934968842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22c83699d89e442f19b873d0585a578b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _turorial: {fileID: 403111026}
-  _addSprite: {fileID: 0}
 --- !u!4 &1934968844
 Transform:
   m_ObjectHideFlags: 0
